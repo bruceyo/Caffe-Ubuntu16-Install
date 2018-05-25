@@ -1,0 +1,86 @@
+Caffe Installation with Anaconda
+Reference:
+https://gist.github.com/arundasan91/b432cb011d1c45b65222d0fac5f9232c
+https://chunml.github.io/ChunML.github.io/project/Installing-Caffe-Ubuntu/
+
+Environment:
+Ubuntu 16.04.4 LTS
+CUDA 8.0
+CuDNN 5.1.1
+
+
+Section 1 Install requirements
+1. Pip version:
+sudo apt-get install python-pip && sudo pip install -r requirements.txt
+
+Pip version 10.0.1 will cause problem when reinstall the ipyhon which require version over 3.0.0 in the requirements.txt: 
+Cannot uninstall 'ipython'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.
+
+SOLUTION:
+Change pip version to 9.0.1
+sudo pip install pip==9.0.1
+Result: ipython-2.4.1 upgraded successfully
+Installing collected packages: ipython
+  Found existing installation: ipython 2.4.1
+    DEPRECATION: Uninstalling a distutils installed project (ipython) has been deprecated and will be removed in a future version. This is due to the fact that uninstalling a distutils project will only partially uninstall the project.
+    Uninstalling ipython-2.4.1:
+      Successfully uninstalled ipython-2.4.1
+Successfully installed ipython-5.7.0
+
+2. python-dateutil version:
+pandas 0.23.0 has requirement python-dateutil>=2.5.0, but you'll have python-dateutil 1.5 which is incompatible.
+matplotlib 2.2.2 has requirement python-dateutil>=2.1, but you'll have python-dateutil 1.5 which is incompatible.
+
+SOLUTION:
+In python/requirements.txt change as below
+	python-dateutil>=1.4<2.0  ->  python-dateutil>=1.4
+
+
+
+Section 2 MAKE ERRORs
+1. protoc version ERROR
+.build_release/src/caffe/proto/caffe.pb.h:19:2: error: #error regenerate this file with a newer version of protoc.
+ #error regenerate this file with a newer version of protoc.
+ 
+SOLUTION
+bruce@superm:~/Downloads$ conda uninstall libprotobuf
+Solving environment: done
+bruce@superm:~/Downloads$ conda uninstall protobuf
+
+2. libhdf5_hl.so.100: cannot open shared object file: No such file or directory
+bruce@superm:~/caffe$ sudo make runtest
+.build_release/tools/caffe
+.build_release/tools/caffe: error while loading shared libraries: libhdf5_hl.so.100: cannot open shared object file: No such file or directory
+Makefile:532: recipe for target 'runtest' failed
+make: *** [runtest] Error 127
+bruce@superm:~/caffe$ make runtest
+.build_release/tools/caffe
+.build_release/tools/caffe: error while loading shared libraries: libhdf5_hl.so.100: cannot open shared object file: No such file or directory
+Makefile:532: recipe for target 'runtest' failed
+make: *** [runtest] Error 127
+bruce@superm:~/caffe$ make runtest
+.build_release/tools/caffe
+.build_release/tools/caffe: error while loading shared libraries: libhdf5_hl.so.100: cannot open shared object file: No such file or directory
+Makefile:532: recipe for target 'runtest' failed
+make: *** [runtest] Error 127
+bruce@superm:~/caffe$ make runtest
+
+.build_release/tools/caffe
+.build_release/tools/caffe: error while loading shared libraries: libhdf5_hl.so.100: cannot open shared object file: No such file or directory
+Makefile:532: recipe for target 'runtest' failed
+make: *** [runtest] Error 127
+bruce@superm:~/caffe$ 
+bruce@superm:~/caffe$ make runtest
+.build_release/tools/caffe
+.build_release/tools/caffe: error while loading shared libraries: libhdf5.so.101: cannot open shared object file: No such file or directory
+Makefile:532: recipe for target 'runtest' failed
+make: *** [runtest] Error 12
+
+SOLUTION:
+Try this:
+cd /usr/lib/x86_64-linux-gnu
+sudo ln -s libhdf5.so.7 libhdf5.so.8
+sudo ln -s libhdf5_hl.so.7 libhdf5_hl.so.8
+or copy the libhdf5.so.10 file from my anaconda/lib folder to /usr/lib/x86_64-linux-gnu/ folder.
+sudo ldconfig
+
